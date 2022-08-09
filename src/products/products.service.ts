@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -32,8 +33,14 @@ export class ProductsService {
     return await this.productRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} product`;
+  async findOne(id: string) {
+    try {
+      const product = await this.productRepository.findOneByOrFail({ id });
+      return product;
+    } catch (err) {
+      throw new NotFoundException(`Product with id: ${id} not found`);
+    }
+    return;
   }
 
   update(id: number, updateProductDto: UpdateProductDto) {
