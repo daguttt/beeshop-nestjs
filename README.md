@@ -16,7 +16,7 @@ pnpm i
 or
 
 ```bash
-npm i
+yarn install
 ```
 
 3. Add `.env` file relying on `.env.example`. Change environment variables
