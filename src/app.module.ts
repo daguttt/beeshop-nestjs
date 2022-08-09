@@ -39,6 +39,7 @@ import * as Joi from 'joi';
         autoLoadEntities: true,
       }),
     }),
+    ProductsModule,
   ],
 })
 export class AppModule {}
