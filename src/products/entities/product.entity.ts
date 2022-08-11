@@ -9,4 +9,25 @@ export class Product {
     unique: true,
   })
   title: string;
+
+  @Column('float')
+  price: number;
+
+  @Column('text', {
+    nullable: true,
+  })
+  description: string;
+
+  @Column('int', {
+    default: 0,
+  })
+  inventory: number;
+
+  @Column('text', {
+    array: true,
+  })
+  sizes: string[];
+
+  @Column('text')
+  gender: string;
 }
