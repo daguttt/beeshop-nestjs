@@ -21,6 +21,7 @@ async function bootstrap() {
     .setTitle('Products API')
     .setDescription('The products API - BeeSoftLabs')
     .setVersion('1.0')
+    .addTag('auth')
     .addTag('products')
     .build();
   const document = SwaggerModule.createDocument(app, config);

@@ -1,26 +1,40 @@
-import { Injectable } from '@nestjs/common';
-import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { CreateUserDto } from 'src/users/dto/create-user.dto';
+import { User } from 'src/users/entities/user.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class AuthService {
-  create(createAuthDto: CreateAuthDto) {
-    return 'This action adds a new auth';
+  logger: Logger = new Logger('AuthService');
+
+  constructor(
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+  ) {}
+
+  async registerUser(createUserDto: CreateUserDto) {
+    const user = this.userRepository.create(createUserDto);
+    try {
+      return await this.userRepository.save(user);
+    } catch (err) {
+      this.handleDbExceptions(err);
+    }
+    return {};
   }
 
-  findAll() {
-    return `This action returns all auth`;
-  }
+  private handleDbExceptions(err: any) {
+    this.logger.error(err.detail);
 
-  findOne(id: number) {
-    return `This action returns a #${id} auth`;
-  }
+    // In case the user already exists
+    if (err.code === '23505') throw new BadRequestException(err.detail);
 
-  update(id: number, updateAuthDto: UpdateAuthDto) {
-    return `This action updates a #${id} auth`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} auth`;
+    throw new InternalServerErrorException('Unhandled exception');
+    // TODO: User not found
   }
 }
