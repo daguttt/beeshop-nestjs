@@ -2,16 +2,20 @@ import {
   BadRequestException,
   Injectable,
   InternalServerErrorException,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Product } from './entities/product.entity';
 
 @Injectable()
 export class ProductsService {
+  private readonly logger = new Logger('ProductsService');
+
   constructor(
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,
@@ -23,9 +27,7 @@ export class ProductsService {
       await this.productRepository.save(product);
       return product;
     } catch (err) {
-      // In case the product already exists
-      if (err.code === '23505') throw new BadRequestException(err.detail);
-      throw new InternalServerErrorException('Unhandled exception');
+      this.handleDbExceptions(err);
     }
   }
 
@@ -38,16 +40,33 @@ export class ProductsService {
       const product = await this.productRepository.findOneByOrFail({ id });
       return product;
     } catch (err) {
+      this.logger.error(err.detail);
       throw new NotFoundException(`Product with id: ${id} not found`);
     }
-    return;
   }
 
-  update(id: number, updateProductDto: UpdateProductDto) {
-    return `This action updates a #${id} product`;
+  async update(id: string, updateProductDto: UpdateProductDto) {
+    const product = await this.productRepository.preload({
+      id,
+      ...updateProductDto,
+    });
+    try {
+      return await this.productRepository.save(product);
+    } catch (err) {
+      this.handleDbExceptions(err);
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} product`;
+  async remove(id: string) {
+    const product = await this.findOne(id);
+    await this.productRepository.remove(product);
+  }
+
+  private handleDbExceptions(err: any) {
+    this.logger.error(err.detail);
+    // In case the product already exists
+    if (err.code === '23505') throw new BadRequestException(err.detail);
+    throw new InternalServerErrorException('Unhandled exception');
+    // TODO: Product not found
   }
 }
