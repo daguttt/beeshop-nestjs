@@ -1,4 +1,10 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  UseInterceptors,
+  ClassSerializerInterceptor,
+} from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiCreatedResponse,
@@ -6,6 +12,7 @@ import {
 } from '@nestjs/swagger';
 
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
+import { ReadUserDto } from 'src/users/dto/read-user.dto';
 
 import { AuthService } from './auth.service';
 
@@ -23,7 +30,9 @@ export class AuthController {
     `,
   })
   @ApiCreatedResponse({ description: 'User registered successfully ' })
-  registerUser(@Body() createUserDto: CreateUserDto) {
-    return this.authService.registerUser(createUserDto);
+  @UseInterceptors(ClassSerializerInterceptor)
+  async registerUser(@Body() createUserDto: CreateUserDto) {
+    const userCreated = await this.authService.registerUser(createUserDto);
+    return new ReadUserDto(userCreated);
   }
 }
