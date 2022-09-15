@@ -9,12 +9,14 @@ import {
   ApiBadRequestResponse,
   ApiCreatedResponse,
   ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { ReadUserDto } from 'src/users/dto/read-user.dto';
 
 import { AuthService } from './auth.service';
+import { LoginUserDto } from './dto/login-user.dto';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -35,5 +37,10 @@ export class AuthController {
     return this.authService.registerUser(createUserDto);
   }
 
+  @Post('loginUser')
+  @ApiUnauthorizedResponse({ description: 'Not valid credentials' })
+  @ApiCreatedResponse({ description: 'User logged in successfully' })
+  loginUser(@Body() loginUserDto: LoginUserDto) {
+    return this.authService.loginUser(loginUserDto);
   }
 }
