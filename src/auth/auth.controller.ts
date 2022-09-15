@@ -30,9 +30,10 @@ export class AuthController {
     `,
   })
   @ApiCreatedResponse({ description: 'User registered successfully ' })
-  @UseInterceptors(ClassSerializerInterceptor)
+  @ApiBadRequestResponse({ description: 'User already exists' })
   async registerUser(@Body() createUserDto: CreateUserDto) {
-    const userCreated = await this.authService.registerUser(createUserDto);
-    return new ReadUserDto(userCreated);
+    return this.authService.registerUser(createUserDto);
+  }
+
   }
 }
