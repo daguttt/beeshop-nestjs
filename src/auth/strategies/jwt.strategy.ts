@@ -8,6 +8,7 @@ import { User } from 'src/users/entities/user.entity';
 
 import { JwtPayload } from '../interfaces/jwt-payload.interface';
 import { ConfigService } from '@nestjs/config';
+import { MessageHandler } from 'src/shared/enums/message-handler.enum';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -24,9 +25,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   async validate(payload: JwtPayload): Promise<User> {
     const { email } = payload;
     const user = await this.userRepository.findOneBy({ email });
-    if (!user) throw new UnauthorizedException('Token not valid!');
+    if (!user)
+      throw new UnauthorizedException(MessageHandler.UNAUTHORIZED_TOKEN);
     if (!user.active)
-      throw new UnauthorizedException('User is inactive, talk with an adming');
+      throw new UnauthorizedException(MessageHandler.UNAUTHORIZED_USER);
     return user;
   }
 }

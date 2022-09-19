@@ -13,6 +13,7 @@ import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { User } from 'src/users/entities/user.entity';
 import { LoginUserDto } from './dto/login-user.dto';
+import { MessageHandler } from 'src/shared/enums/message-handler.enum';
 
 @Injectable()
 export class AuthService {
@@ -45,9 +46,13 @@ export class AuthService {
     });
 
     if (!user)
-      throw new UnauthorizedException('Credentials are not valid (email)');
+      throw new UnauthorizedException(
+        MessageHandler.NOT_VALID_CREDENTIALS_EMAIL,
+      );
     if (!bcrypt.compareSync(password, user.password))
-      throw new UnauthorizedException('Credentials are not valid (password)');
+      throw new UnauthorizedException(
+        MessageHandler.NOT_VALID_CREDENTIALS_PASSWORD,
+      );
 
     return user;
     // TODO: Return JWT
@@ -60,7 +65,7 @@ export class AuthService {
     // In case the user already exists
     if (err.code === '23505') throw new BadRequestException(err.detail);
 
-    throw new InternalServerErrorException('Unhandled exception');
+    throw new InternalServerErrorException(MessageHandler.UNHANDLED);
     // TODO: User not found
   }
 }

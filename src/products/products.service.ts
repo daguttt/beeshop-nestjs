@@ -6,6 +6,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { MessageHandler } from 'src/shared/enums/message-handler.enum';
 import { Repository } from 'typeorm';
 
 import { CreateProductDto } from './dto/create-product.dto';
@@ -66,7 +67,7 @@ export class ProductsService {
     this.logger.error(err.detail);
     // In case the product already exists
     if (err.code === '23505') throw new BadRequestException(err.detail);
-    throw new InternalServerErrorException('Unhandled exception');
+    throw new InternalServerErrorException(MessageHandler.UNHANDLED);
     // TODO: Product not found
   }
 }
