@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MessageHandler } from 'src/shared/enums/message-handler.enum';
+import { User } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
 
 import { CreateProductDto } from './dto/create-product.dto';
@@ -22,8 +23,12 @@ export class ProductsService {
     private readonly productRepository: Repository<Product>,
   ) {}
 
-  async create(createProductDto: CreateProductDto) {
-    const product = this.productRepository.create(createProductDto);
+  async create(createProductDto: CreateProductDto, user: User) {
+    const product = this.productRepository.create({
+      ...createProductDto,
+      user,
+    });
+
     try {
       await this.productRepository.save(product);
       return product;
@@ -46,12 +51,13 @@ export class ProductsService {
     }
   }
 
-  async update(id: string, updateProductDto: UpdateProductDto) {
+  async update(id: string, updateProductDto: UpdateProductDto, user: User) {
     const product = await this.productRepository.preload({
       id,
       ...updateProductDto,
     });
     try {
+      product.user = user;
       return await this.productRepository.save(product);
     } catch (err) {
       this.handleDbExceptions(err);
