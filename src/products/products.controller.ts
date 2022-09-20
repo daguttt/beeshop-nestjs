@@ -19,6 +19,7 @@ import {
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { MessageHandler } from 'src/shared/enums/message-handler.enum';
 
 @ApiTags('products')
 @Controller('products')
@@ -33,7 +34,7 @@ export class ProductsController {
   }
 
   @Get()
-  @ApiOkResponse({ description: 'Request successfully!' })
+  @ApiOkResponse({ description: MessageHandler.OK_RESPONSE })
   findAll() {
     return this.productsService.findAll();
   }
@@ -54,7 +55,7 @@ export class ProductsController {
   }
 
   @Delete(':id')
-  @ApiOkResponse({ description: 'Request successfully' })
+  @ApiOkResponse({ description: MessageHandler.OK_RESPONSE })
   @ApiParam({ name: 'id', description: 'UUID Format' })
   remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.productsService.remove(id);

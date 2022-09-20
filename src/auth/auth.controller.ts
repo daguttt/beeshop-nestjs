@@ -48,14 +48,4 @@ export class AuthController {
   loginUser(@Body() loginUserDto: LoginUserDto) {
     return this.authService.loginUser(loginUserDto);
   }
-
-  @Get('private')
-  @UseGuards(AuthGuard())
-  getHelloPrivate(@GetUser() user: User) {
-    return {
-      ok: true,
-      message: 'Hello World Private',
-      user,
-    };
-  }
 }

@@ -23,6 +23,7 @@ async function bootstrap() {
     .setVersion('1.0')
     .addTag('auth')
     .addTag('products')
+    .addTag('users')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document);
