@@ -4,7 +4,10 @@ import {
   Body,
   UseInterceptors,
   ClassSerializerInterceptor,
+  UseGuards,
+  Get,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import {
   ApiBadRequestResponse,
   ApiCreatedResponse,
@@ -42,5 +45,14 @@ export class AuthController {
   @ApiCreatedResponse({ description: 'User logged in successfully' })
   loginUser(@Body() loginUserDto: LoginUserDto) {
     return this.authService.loginUser(loginUserDto);
+  }
+
+  @Get('private')
+  @UseGuards(AuthGuard())
+  getHelloPrivate() {
+    return {
+      ok: true,
+      message: 'Hello World Private',
+    };
   }
 }
