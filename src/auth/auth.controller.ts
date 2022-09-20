@@ -17,8 +17,10 @@ import {
 
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { ReadUserDto } from 'src/users/dto/read-user.dto';
+import { User } from 'src/users/entities/user.entity';
 
 import { AuthService } from './auth.service';
+import { GetUser } from './decorators/get-user.decorator';
 import { LoginUserDto } from './dto/login-user.dto';
 
 @Controller('auth')
@@ -49,10 +51,11 @@ export class AuthController {
 
   @Get('private')
   @UseGuards(AuthGuard())
-  getHelloPrivate() {
+  getHelloPrivate(@GetUser() user: User) {
     return {
       ok: true,
       message: 'Hello World Private',
+      user,
     };
   }
 }
